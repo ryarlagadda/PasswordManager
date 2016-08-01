@@ -1,8 +1,5 @@
-console.log('starting password manager');
-
 var storage = require('node-persist');
 var crypto = require('crypto-js')
-
 storage.initSync();
 
 var argv = require('yargs')
@@ -11,7 +8,7 @@ var argv = require('yargs')
 			name: {
 				demand: true,
 				alias: 'n',
-				description: 'Account name (eg: Twitter, Facebook)',
+				description: 'Your name goes here',
 				type: 'string'
 			},
 			username: {
@@ -39,7 +36,7 @@ var argv = require('yargs')
 			name: {
 				demand: true,
 				alias: 'n',
-				description: 'Account name (eg: Twitter, Facebook)',
+				description: 'Your name goes here',
 				type: 'string'
 			},
 			masterPassword: {
@@ -54,41 +51,19 @@ var argv = require('yargs')
 	.argv;
 var command = argv._[0];
 
-// create
-//     --name
-//     --username
-//     --password
-
-// get
-//     --name
-
-// account.name Facebook
-// account.username User12!
-// account.password Password123!
-
 function getAccounts (masterPassword) {
-	// use getItemSync to fetch accounts
 	var encryptedAccount = storage.getItemSync('accounts');
 	var accounts = [];
-
-	// decrypt
 	if (typeof encryptedAccount !== 'undefined') {
 		var bytes = crypto.AES.decrypt(encryptedAccount, masterPassword);
 		accounts = JSON.parse(bytes.toString(crypto.enc.Utf8));
 	}
-
-	// return accounts array
 	return accounts;
 }
 
 function saveAccounts (accounts, masterPassword) {
-	// encrypt accounts
 	var encryptedAccounts = crypto.AES.encrypt(JSON.stringify(accounts), masterPassword);
-	
-	// setItemSync
 	storage.setItemSync('accounts', encryptedAccounts.toString());
-	
-	// return accounts
 	return accounts;
 }
 
